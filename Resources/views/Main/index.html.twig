@@ -158,38 +158,77 @@
         }
 
         {% if search %}
-        $(".dataTables_filter").remove();
-        var search_selector = "#{{id}} input[searchable=true]";
-        $(search_selector).keypress( function (event) {
-            var index = $(this).attr('index');
-            var oTable = eval('oTable_{{id}}'.split('-').join('_'));
-            if (event.keyCode == '13') {
+
+            var searchOnce = function () {
+                var oTable = eval('oTable_{{id}}'.split('-').join('_'));
                 oTable.fnFilter( 
-                    this.value, 
+                    $('#search-field_{{id}}').val(), 
                     oTable.oApi._fnVisibleToColumnIndex( 
-                        oTable.fnSettings(), 
-                        index 
+                        oTable.fnSettings()
                     ) 
                 );
             }
-        }).each( function (i) {
-            this.initVal = this.value;
-        }).focus( function () {
-            if ( this.className == "search_init" ){
-                this.className = "";
-                this.value = "";
-            }
-        }).blur( function (i) {
-            if ( this.value == "" ){
-                this.className = "search_init";
-                this.value = this.initVal;
-            }
-        });
+
+
+            $(".dataTables_filter").remove();
+            var search_selector = "#{{id}} input[searchable=true]";
+            $(search_selector).keypress( function (event) {
+                var index = $(this).attr('index');
+                var oTable = eval('oTable_{{id}}'.split('-').join('_'));
+                if (event.keyCode == '13') {
+                    oTable.fnFilter( 
+                        this.value, 
+                        oTable.oApi._fnVisibleToColumnIndex( 
+                            oTable.fnSettings(), 
+                            index 
+                        ) 
+                    );
+                }
+            }).each( function (i) {
+                this.initVal = this.value;
+            }).focus( function () {
+                if ( this.className == "search_init" ){
+                    this.className = "";
+                    this.value = "";
+                }
+            }).blur( function (i) {
+                if ( this.value == "" ){
+                    this.className = "search_init";
+                    this.value = this.initVal;
+                }
+            });
+
+            $("#start-search_{{id}}").click(function(){
+                searchOnce();
+            });
+
+            $("#search-field_{{id}}").keypress( function (event) {
+                if (event.keyCode == '13') {
+                    searchOnce();
+                }
+            });
+
         {% endif %}
     });
 </script>
 
-azdad
+{% if search and searchUnique %}
+
+    <div class="pull-right col-xs-4 search-datatable-once">
+        <div class="input-group">
+            <input class="form-control" type="text" id="search-field_{{id}}">
+            <span class="input-group-btn">
+                <button class="btn btn-sm btn-default" type="button"  id="start-search_{{id}}">
+                    <i class="icon-search nav-search-icon bigger-110"></i>
+                    Rechercher
+                </button>
+            </span>
+        </div>
+    </div>
+
+{% endif %}
+
+
 {% if multiple %}
 <form name="frm-{{id}}">
 {% endif %}
@@ -209,7 +248,7 @@ azdad
             {% endif %}
             </tr> 
         </thead>
-        {% if search %}
+        {% if search and not searchUnique %}
         {% set i = 0 %}
         <tfoot>
             <tr>

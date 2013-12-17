@@ -5,6 +5,7 @@ namespace Ali\DatatableBundle\Twig\Extension;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Ali\DatatableBundle\Util\Datatable;
+use Ali\DatatableBundle\Util\Factory\Query\DoctrineBuilder;
 
 class AliDatatableExtension extends \Twig_Extension
 {
@@ -55,8 +56,9 @@ class AliDatatableExtension extends \Twig_Extension
         $options['search']        = $dt->getSearch();
         $options['search_fields'] = $dt->getSearchFields();
         $options['multiple']      = $dt->getMultiple();
-        $options['sort']          = is_null($dt->getOrderField()) ? NULL : [array_search(
-                    $dt->getOrderField(), array_values($dt->getFields())), $dt->getOrderType()];
+        $options['sort']          = null;
+        $options['searchUnique']  = ($dt->getSearchType() == DoctrineBuilder::SEARCH_ONE_FOR_ALL);
+        //$options['sort']          = is_null($dt->getOrderField()) ? NULL : [array_search($dt->getOrderField(), array_values($dt->getFields())), $dt->getOrderType()];
         $main_template            = 'AliDatatableBundle:Main:index.html.twig';
         if (isset($options['main_template']))
         {

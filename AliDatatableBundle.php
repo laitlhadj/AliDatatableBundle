@@ -1,6 +1,6 @@
 <?php
 
-namespace Laitlhadj\AliDatatableBundle;
+namespace Ali\DatatableBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

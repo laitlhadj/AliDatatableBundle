@@ -13,7 +13,6 @@ use Ali\DatatableBundle\Util\Factory\Query\QueryInterface,
 
 class Datatable
 {
-
     /** @var array */
     protected $_fixed_data = NULL;
 
@@ -52,6 +51,9 @@ class Datatable
 
     /** @var boolean */
     protected $_search;
+
+    /** @var string */
+    protected $_search_type = null;
 
     /** @var array */
     protected $_search_fields = array();
@@ -497,6 +499,30 @@ class Datatable
     }
 
     /**
+     * set searchType
+     * 
+     * @param bool $search
+     * 
+     * @return Datatable
+     */
+    public function setSearchType($searchType)
+    {
+        $this->_search_type = $searchType;
+        $this->_queryBuilder->setSearchType($searchType);
+        return $this;
+    }
+
+    /**
+     * get searchType
+     * 
+     * @return string
+     */
+    public function getSearchType()
+    {
+        return $this->_search_type;
+    }
+
+    /**
      * set datatable identifier
      * 
      * @param string $id
@@ -577,6 +603,9 @@ class Datatable
     public function setSearchFields(array $search_fields)
     {
         $this->_search_fields = $search_fields;
+
+        $this->_queryBuilder->setSearchFields($search_fields);
+        
         return $this;
     }
 

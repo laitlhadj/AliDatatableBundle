@@ -8,6 +8,8 @@ use Doctrine\ORM\Query,
 
 class DoctrineBuilder implements QueryInterface
 {
+    const SEARCH_ONE_BY_FIELD = 'ALL';
+    const SEARCH_ONE_FOR_ALL  = 'UNIQUE';
 
     /** @var \Symfony\Component\DependencyInjection\ContainerInterface */
     protected $container;
@@ -32,27 +34,33 @@ class DoctrineBuilder implements QueryInterface
 
     /** @var string */
     protected $order_field = NULL;
-
+    
     /** @var string */
-    protected $order_type = "asc";
-
+    protected $order_type  = "asc";
+    
     /** @var string */
-    protected $where = NULL;
-
+    protected $where       = NULL;
+    
     /** @var array */
-    protected $joins = array();
-
+    protected $joins       = array();
+    
     /** @var boolean */
-    protected $has_action = true;
-
+    protected $has_action  = true;
+    
     /** @var array */
-    protected $fixed_data = NULL;
-
+    protected $fixed_data  = NULL;
+    
     /** @var closure */
-    protected $renderer = NULL;
-
+    protected $renderer    = NULL;
+    
     /** @var boolean */
-    protected $search = FALSE;
+    protected $search      = FALSE;
+    
+    /** @var string */
+    protected $search_type = null;
+
+    /** @var array */
+    protected $search_fields = array();
 
     /**
      * class constructor 
@@ -65,6 +73,7 @@ class DoctrineBuilder implements QueryInterface
         $this->em           = $this->container->get('doctrine.orm.entity_manager');
         $this->request      = $this->container->get('request');
         $this->queryBuilder = $this->em->createQueryBuilder();
+        $this->search_type  = self::SEARCH_ONE_BY_FIELD;
     }
 
     /**
@@ -75,16 +84,37 @@ class DoctrineBuilder implements QueryInterface
     protected function _addSearch(\Doctrine\ORM\QueryBuilder $queryBuilder)
     {
         if ($this->search == TRUE)
-        {
-            $request       = $this->request;
-            $search_fields = array_values($this->fields);
-            foreach ($search_fields as $i => $search_field)
-            {
-                $search_param = $request->get("sSearch_{$i}");
-                if ($request->get("sSearch_{$i}") !== false && !empty($search_param))
-                {
-                    $queryBuilder->andWhere(" $search_field like '%{$request->get("sSearch_{$i}")}%' ");
-                }
+        {         
+            switch ($this->search_type) {
+
+                case self::SEARCH_ONE_BY_FIELD :
+                    $request       = $this->request;
+                    $search_fields = array_values($this->fields);
+                    foreach ($search_fields as $i => $search_field)
+                    {
+                        $search_param = $request->get("sSearch_{$i}");
+                        if ($request->get("sSearch_{$i}") !== false && !empty($search_param)) {
+                            $queryBuilder->andWhere(" $search_field ilike '%".$request->get("sSearch_{$i}")."%' ");
+                        }
+                    }
+                    break;
+
+                case self::SEARCH_ONE_FOR_ALL :
+                    $request       = $this->request;
+                    $search_fields = array_values($this->fields);
+                    $search_param  = $request->get("sSearch");
+
+                    if (!empty($search_param)) {
+                        $where = array();
+                        foreach ($this->search_fields as $i) {
+                            array_push($where, " LOWER({$search_fields[$i]}) like '%".strtolower($request->get("sSearch"))."%' ");
+                        }
+                        $queryBuilder->andWhere(implode(' OR ', $where));
+                    }
+                    break;
+                
+                default:
+                    throw new \Exception("Unknow search type {$this->search_type}");
             }
         }
     }
@@ -380,6 +410,19 @@ class DoctrineBuilder implements QueryInterface
     }
 
     /**
+     * set searchType
+     * 
+     * @param string $searchType
+     * 
+     * @return Datatable
+     */
+    public function setSearchType($searchType)
+    {
+        $this->search_type = $searchType;
+        return $this;
+    }
+
+    /**
      * set doctrine query builder
      * 
      * @param \Doctrine\ORM\QueryBuilder $queryBuilder
@@ -389,6 +432,29 @@ class DoctrineBuilder implements QueryInterface
     public function setDoctrineQueryBuilder(\Doctrine\ORM\QueryBuilder $queryBuilder)
     {
         $this->queryBuilder = $queryBuilder;
+        return $this;
+    }
+
+    /**
+     * get search field
+     * 
+     * @return array
+     */
+    public function getSearchFields()
+    {
+        return $this->_search_fields;
+    }
+
+    /**
+     * set search fields
+     * 
+     * @param array $search_fields
+     * 
+     * @return Datatable
+     */
+    public function setSearchFields(array $search_fields)
+    {
+        $this->search_fields = $search_fields;
         return $this;
     }
 
