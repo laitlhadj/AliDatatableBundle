@@ -58,6 +58,8 @@ class AliDatatableExtension extends \Twig_Extension
         $options['multiple']      = $dt->getMultiple();
         $options['sort']          = null;
         $options['searchUnique']  = ($dt->getSearchType() == DoctrineBuilder::SEARCH_ONE_FOR_ALL);
+        $options['fieldsWidth']   = array_values($dt->getFieldsWidth());
+
         //$options['sort']          = is_null($dt->getOrderField()) ? NULL : [array_search($dt->getOrderField(), array_values($dt->getFields())), $dt->getOrderType()];
         $main_template            = 'AliDatatableBundle:Main:index.html.twig';
         if (isset($options['main_template']))

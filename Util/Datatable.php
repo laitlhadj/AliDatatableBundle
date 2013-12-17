@@ -57,6 +57,9 @@ class Datatable
 
     /** @var array */
     protected $_search_fields = array();
+
+    /** @var array */
+    protected $_fields_width = array();
     
     /** @var array */
     protected static $_instances = array();
@@ -605,6 +608,34 @@ class Datatable
         $this->_search_fields = $search_fields;
 
         $this->_queryBuilder->setSearchFields($search_fields);
+        
+        return $this;
+    }
+
+    /**
+     * get _fields_width
+     * 
+     * @return array
+     */
+    public function getFieldsWidth()
+    {
+        return $this->_fields_width;
+    }
+
+    /**
+     * set search fields
+     * 
+     * @example 
+     * 
+     *      ->setSearchFields(array(0,2,5))
+     * 
+     * @param array $search_fields
+     * 
+     * @return \Ali\DatatableBundle\Util\Datatable
+     */
+    public function setFieldsWidth(array $fields_width)
+    {
+        $this->_fields_width = $fields_width;
         
         return $this;
     }
