@@ -17,10 +17,10 @@
 	"twig/twig": ">=1.8,<2.0-dev",
         "doctrine/common": ">=2.1,<2.4.x-dev"
     },
-    "target-dir": "Laitlhadj/AliDatatableBundle",
+    "target-dir": "Ali/DatatableBundle",
     "autoload": {
         "psr-0": {
-            "Laitlhadj\\AliDatatableBundle": ""
+            "Ali\\DatatableBundle": ""
         }
     }
 }
