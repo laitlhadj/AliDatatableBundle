@@ -1,0 +1,19 @@
+.dataTables_processing{
+    display: none!important;
+}
+
+.search-datatable-once {
+    margin-bottom: 13px;
+}
+
+.datatabe-footer{
+    margin-top: 10px;
+}
+
+.pagination {
+    margin: 0px;
+}
+
+.datatable-pagination{
+    text-align: right;
+}
